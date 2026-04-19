@@ -1,0 +1,129 @@
+# ===================================================
+# CARETAKER — .gitignore
+# Unity + Windows + macOS + JetBrains Rider + VS
+# ===================================================
+
+# -----------------------
+# Unity Generated Folders
+# -----------------------
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+MemoryCaptures/
+Recordings/
+
+# Unity Asset Database (regenerated)
+Assets/AssetStoreTools*
+
+# Unity auto-generated shader variants
+ShaderVariants/
+
+# -----------------------
+# Unity Meta Files
+# Only ignore metas for non-tracked folders
+# -----------------------
+# (Do NOT add a blanket *.meta ignore — Unity needs them)
+
+# -----------------------
+# Visual Studio / Rider
+# -----------------------
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docview
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.VC.opendb
+ExportedObj/
+*.csproj
+*.sln
+*.unityproj
+
+# -----------------------
+# OS Generated
+# -----------------------
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+
+# -----------------------
+# Build Artifacts
+# -----------------------
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+*.x86
+*.x86_64
+*.BC
+
+# -----------------------
+# Crash Reports
+# -----------------------
+sysinfo.txt
+Crashes/
+
+# -----------------------
+# Python (tools/)
+# -----------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+*.egg
+.env
+.venv
+venv/
+pip-log.txt
+
+# -----------------------
+# Node (if any tooling)
+# -----------------------
+node_modules/
+npm-debug.log*
+
+# -----------------------
+# Rider-specific
+# -----------------------
+.idea/
+*.DotSettings.user
+
+# -----------------------
+# dotnet
+# -----------------------
+*.nupkg
+
+# -----------------------
+# Local Config (secrets)
+# -----------------------
+.env.local
+secrets.json
+config.local.*
