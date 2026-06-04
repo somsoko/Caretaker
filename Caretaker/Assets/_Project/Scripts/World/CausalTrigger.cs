@@ -9,28 +9,78 @@ namespace Caretaker.World
     /// <remarks>
     /// DSD §3.1 — 시간 인과 시스템
     /// 계층: Unity Component
+    ///
+    /// 사용법:
+    /// 1. InteractableObject와 같은 GameObject에 부착한다.
+    /// 2. Inspector에서 _causalRule에 CausalRuleSO를 드래그하면 triggerId가 자동 설정된다.
+    /// 3. InteractableObject.RunOperate() 시 자동으로 Fire()가 호출된다.
     /// </remarks>
     public class CausalTrigger : MonoBehaviour
     {
+        [Header("Causal Rule")]
+        [Tooltip("CausalRuleSO를 드래그하면 triggerId가 자동 설정됩니다.")]
+        [SerializeField] private CausalRuleSO _causalRule;
+
+        [Header("Resolved ID")]
+        [Tooltip("CausalRuleSO에서 자동 추출된 Trigger ID입니다.")]
         [SerializeField] private string _triggerId;
 
-        /// <summary>이 트리거의 고유 식별자.</summary>
+        private CausalityManager _causalityManager;
+
+        /// <summary>이 트리거의 고유 식별자. (예: CR_P1_POWER_LEVER)</summary>
         public string TriggerId => _triggerId;
 
-        /// <summary>
-        /// Activates this causal trigger entry point.
-        /// </summary>
-        /// <returns>True when the trigger has a valid trigger ID.</returns>
-        public bool Activate()
+        /// <summary>연결된 CausalRuleSO 에셋.</summary>
+        public CausalRuleSO CausalRule => _causalRule;
+
+        private void Awake()
         {
-            if (string.IsNullOrWhiteSpace(_triggerId))
+            CacheCausalityManager();
+        }
+
+        private void OnValidate()
+        {
+            if (_causalRule != null)
             {
-                Debug.LogWarning("CausalTrigger activation failed. TriggerId is empty.", this);
-                return false;
+                _triggerId = _causalRule.TriggerId;
             }
 
-            Debug.Log($"CausalTrigger activated: triggerId={_triggerId}", this);
-            return true;
+            if (_triggerId != null)
+            {
+                _triggerId = _triggerId.Trim();
+            }
+        }
+
+        /// <summary>
+        /// InteractableObject.RunOperate()에서 호출된다.
+        /// CausalityManager에 ServerRpc 트리거 요청을 전송한다.
+        /// </summary>
+        public void Fire()
+        {
+            CacheCausalityManager();
+
+            if (_causalityManager == null)
+            {
+                Debug.LogError(
+                    $"CausalityManager not found. Cannot fire trigger '{_triggerId}'.", this);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_triggerId))
+            {
+                Debug.LogWarning("CausalTrigger has empty triggerId.", this);
+                return;
+            }
+
+            _causalityManager.SubmitTriggerServerRpc(_triggerId);
+        }
+
+        private void CacheCausalityManager()
+        {
+            if (_causalityManager == null)
+            {
+                _causalityManager = FindAnyObjectByType<CausalityManager>();
+            }
         }
     }
 }
