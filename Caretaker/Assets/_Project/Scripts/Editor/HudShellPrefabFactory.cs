@@ -83,7 +83,7 @@ namespace Caretaker.Editor
                 Vector2.one,
                 Vector2.one,
                 new Vector2(-16f, -16f),
-                new Vector2(220f, 64f));
+                new Vector2(260f, 96f));
             GameObject causalityArea = CreateArea(
                 "CausalityArea",
                 root.transform,
@@ -185,15 +185,48 @@ namespace Caretaker.Editor
             examineBodyText.fontSize = 22f;
             examineBodyText.textWrappingMode = TextWrappingModes.Normal;
 
-            GameObject radioRoot = CreateArea(
-                "RadioRoot",
+            GameObject controlModeRoot = CreateArea(
+                "ControlModeRoot",
                 statusArea.transform,
-                Vector2.zero,
+                new Vector2(0f, 0.5f),
                 Vector2.one,
                 Vector2.one,
                 Vector2.zero,
                 Vector2.zero);
+            TextMeshProUGUI controlModeText =
+                CreateText("ControlModeText", controlModeRoot.transform, "Mode: Investigation");
+            controlModeText.alignment = TextAlignmentOptions.Right;
+            GameObject normalModeIndicator = CreateArea(
+                "NormalModeIndicator",
+                controlModeRoot.transform,
+                new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f),
+                new Vector2(8f, 0f),
+                new Vector2(12f, 12f));
+            Image normalModeImage = normalModeIndicator.AddComponent<Image>();
+            normalModeImage.color = new Color(0.35f, 0.85f, 1f, 1f);
+            GameObject combatModeIndicator = CreateArea(
+                "CombatModeIndicator",
+                controlModeRoot.transform,
+                new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f),
+                new Vector2(8f, 0f),
+                new Vector2(12f, 12f));
+            Image combatModeImage = combatModeIndicator.AddComponent<Image>();
+            combatModeImage.color = new Color(1f, 0.3f, 0.2f, 1f);
+
+            GameObject radioRoot = CreateArea(
+                "RadioRoot",
+                statusArea.transform,
+                Vector2.zero,
+                new Vector2(1f, 0.5f),
+                Vector2.one,
+                Vector2.zero,
+                Vector2.zero);
             TextMeshProUGUI radioText = CreateText("RadioStatusText", radioRoot.transform, "Radio Waiting");
+            radioText.alignment = TextAlignmentOptions.Right;
             GameObject radioIndicator = CreateArea(
                 "RadioActiveIndicator",
                 radioRoot.transform,
@@ -220,6 +253,7 @@ namespace Caretaker.Editor
             modalArea.SetActive(false);
             objectiveRoot.SetActive(false);
             radioIndicator.SetActive(false);
+            combatModeIndicator.SetActive(false);
             causalityRoot.SetActive(false);
 
             Assign(hudPresenter, "_hudRoot", root);
@@ -234,6 +268,9 @@ namespace Caretaker.Editor
             Assign(hudPresenter, "_causalityIndicatorPresenter", causalityPresenter);
             Assign(hudPresenter, "_radioStatusText", radioText);
             Assign(hudPresenter, "_radioActiveIndicator", radioIndicator);
+            Assign(hudPresenter, "_controlModeText", controlModeText);
+            Assign(hudPresenter, "_normalModeIndicator", normalModeIndicator);
+            Assign(hudPresenter, "_combatModeIndicator", combatModeIndicator);
             Assign(runtimeBinder, "_hudPresenter", hudPresenter);
             Assign(examinePopupPresenter, "_panelRoot", modalArea);
             Assign(examinePopupPresenter, "_titleText", examineTitleText);

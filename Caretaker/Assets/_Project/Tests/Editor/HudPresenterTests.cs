@@ -188,6 +188,11 @@ namespace Caretaker.Tests.Editor
             TextMeshProUGUI radioText = CreateText(hudRoot.transform, "RadioText");
             GameObject radioIndicator = new("RadioIndicator");
             radioIndicator.transform.SetParent(hudRoot.transform);
+            TextMeshProUGUI controlModeText = CreateText(hudRoot.transform, "ControlModeText");
+            GameObject normalModeIndicator = new("NormalModeIndicator");
+            normalModeIndicator.transform.SetParent(hudRoot.transform);
+            GameObject combatModeIndicator = new("CombatModeIndicator");
+            combatModeIndicator.transform.SetParent(hudRoot.transform);
             HudPresenter presenter = hudRoot.AddComponent<HudPresenter>();
 
             try
@@ -197,10 +202,14 @@ namespace Caretaker.Tests.Editor
                 serializedPresenter.FindProperty("_objectiveText").objectReferenceValue = objectiveText;
                 serializedPresenter.FindProperty("_radioStatusText").objectReferenceValue = radioText;
                 serializedPresenter.FindProperty("_radioActiveIndicator").objectReferenceValue = radioIndicator;
+                serializedPresenter.FindProperty("_controlModeText").objectReferenceValue = controlModeText;
+                serializedPresenter.FindProperty("_normalModeIndicator").objectReferenceValue = normalModeIndicator;
+                serializedPresenter.FindProperty("_combatModeIndicator").objectReferenceValue = combatModeIndicator;
                 serializedPresenter.ApplyModifiedPropertiesWithoutUndo();
 
                 presenter.SetObjective("Restore power");
                 presenter.SetRadioState(RadioState.Transmitting, 1UL);
+                presenter.SetControlMode(PlayerControlMode.Combat);
 
                 Assert.That(presenter.Objective, Is.EqualTo("Restore power"));
                 Assert.That(objectiveText.text, Is.EqualTo("Restore power"));
@@ -208,6 +217,10 @@ namespace Caretaker.Tests.Editor
                 Assert.That(presenter.RadioStatus, Is.EqualTo("Radio Tx"));
                 Assert.That(radioText.text, Is.EqualTo("Radio Tx"));
                 Assert.That(radioIndicator.activeSelf, Is.True);
+                Assert.That(presenter.ControlModeStatus, Is.EqualTo("Mode: Combat"));
+                Assert.That(controlModeText.text, Is.EqualTo("Mode: Combat"));
+                Assert.That(normalModeIndicator.activeSelf, Is.False);
+                Assert.That(combatModeIndicator.activeSelf, Is.True);
 
                 presenter.ClearObjective();
 

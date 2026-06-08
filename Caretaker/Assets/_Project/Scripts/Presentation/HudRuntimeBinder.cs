@@ -29,6 +29,7 @@ namespace Caretaker.Presentation
         private GameObject _currentPlayer;
         private InteractionProbe _interactionProbe;
         private InventoryController _inventoryController;
+        private PlayerInputReader _playerInputReader;
         private string _lastPromptText = string.Empty;
 
         private void Awake()
@@ -71,6 +72,7 @@ namespace Caretaker.Presentation
             }
 
             UnbindInventory();
+            UnbindPlayerInput();
             _interactionProbe = null;
             _currentPlayer = null;
             _lastPromptText = string.Empty;
@@ -240,6 +242,7 @@ namespace Caretaker.Presentation
             }
 
             UnbindInventory();
+            UnbindPlayerInput();
 
             _currentPlayer = currentPlayer;
             _interactionProbe = currentPlayer != null
@@ -248,10 +251,23 @@ namespace Caretaker.Presentation
             _inventoryController = currentPlayer != null
                 ? currentPlayer.GetComponent<InventoryController>()
                 : null;
+            _playerInputReader = currentPlayer != null
+                ? currentPlayer.GetComponent<PlayerInputReader>()
+                : null;
 
             if (_inventoryController != null)
             {
                 _inventoryController.OnInventoryChanged += HandleInventoryChanged;
+            }
+
+            if (_playerInputReader != null)
+            {
+                _playerInputReader.OnControlModeChanged += HandleControlModeChanged;
+                HandleControlModeChanged(_playerInputReader.ControlMode);
+            }
+            else if (_hudPresenter != null)
+            {
+                _hudPresenter.SetControlMode(PlayerControlMode.Normal);
             }
 
             RefreshInteractionPrompt();
@@ -266,8 +282,27 @@ namespace Caretaker.Presentation
             }
         }
 
+        private void UnbindPlayerInput()
+        {
+            if (_playerInputReader != null)
+            {
+                _playerInputReader.OnControlModeChanged -= HandleControlModeChanged;
+                _playerInputReader = null;
+            }
+        }
+
         private void HandleInventoryChanged(InventoryState state)
         {
+            RefreshInteractionPrompt();
+        }
+
+        private void HandleControlModeChanged(PlayerControlMode controlMode)
+        {
+            if (_hudPresenter != null)
+            {
+                _hudPresenter.SetControlMode(controlMode);
+            }
+
             RefreshInteractionPrompt();
         }
 
@@ -320,6 +355,14 @@ namespace Caretaker.Presentation
             string selectedItemId = _inventoryController != null
                 ? _inventoryController.SelectedItemId
                 : string.Empty;
+            if (_playerInputReader != null && _playerInputReader.ControlMode == PlayerControlMode.Combat)
+            {
+                return BuildPromptText(
+                    null,
+                    _interactionProbe.ProximityTarget,
+                    selectedItemId);
+            }
+
             return BuildPromptText(
                 _interactionProbe.HoverTarget,
                 _interactionProbe.ProximityTarget,

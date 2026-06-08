@@ -1,4 +1,5 @@
 using Caretaker.Gameplay;
+using Caretaker.Shared;
 using TMPro;
 using UnityEngine;
 
@@ -36,7 +37,14 @@ namespace Caretaker.Presentation
         [SerializeField] private TMP_Text _radioStatusText;
         [SerializeField] private GameObject _radioActiveIndicator;
 
+        [Header("Control Mode")]
+        [SerializeField] private TMP_Text _controlModeText;
+        [SerializeField] private GameObject _normalModeIndicator;
+        [SerializeField] private GameObject _combatModeIndicator;
+
         private string _objective = string.Empty;
+        private PlayerControlMode _controlMode = PlayerControlMode.Normal;
+        private string _controlModeStatus = "Mode: Investigation";
         private RadioState _radioState = RadioState.Idle;
         private ulong _radioTalkerId = RadioNetworkBridge.NO_TALKER_ID;
         private string _radioStatus = "Waiting for Radio";
@@ -67,6 +75,11 @@ namespace Caretaker.Presentation
         public bool IsModalOverlayVisible => _modalOverlayVisible;
 
         /// <summary>
+        /// 현재 HUD에 표시 중인 플레이어 조작 모드 문구를 반환한다.
+        /// </summary>
+        public string ControlModeStatus => _controlModeStatus;
+
+        /// <summary>
         /// 현재 HUD에 표시 중인 무전기 상태 문구를 반환한다.
         /// </summary>
         public string RadioStatus => _radioStatus;
@@ -76,6 +89,7 @@ namespace Caretaker.Presentation
             ResolveDefaultReferences();
             RenderObjective();
             RenderModalOverlay();
+            RenderControlMode();
             RenderRadioState();
         }
 
@@ -157,6 +171,17 @@ namespace Caretaker.Presentation
         }
 
         /// <summary>
+        /// 현재 플레이어 조작 모드를 HUD에 표시한다.
+        /// </summary>
+        /// <param name="controlMode">로컬 플레이어의 현재 입력 해석 모드.</param>
+        public void SetControlMode(PlayerControlMode controlMode)
+        {
+            _controlMode = controlMode;
+            _controlModeStatus = BuildControlModeStatusText(controlMode);
+            RenderControlMode();
+        }
+
+        /// <summary>
         /// 무전기 상태를 HUD에 표시한다.
         /// </summary>
         /// <param name="state">로컬 플레이어 기준 무전기 상태.</param>
@@ -221,6 +246,33 @@ namespace Caretaker.Presentation
             {
                 _radioActiveIndicator.SetActive(_radioState is RadioState.Transmitting or RadioState.Receiving);
             }
+        }
+
+        private void RenderControlMode()
+        {
+            bool isCombat = _controlMode == PlayerControlMode.Combat;
+
+            if (_controlModeText != null)
+            {
+                _controlModeText.text = _controlModeStatus;
+            }
+
+            if (_normalModeIndicator != null)
+            {
+                _normalModeIndicator.SetActive(!isCombat);
+            }
+
+            if (_combatModeIndicator != null)
+            {
+                _combatModeIndicator.SetActive(isCombat);
+            }
+        }
+
+        private static string BuildControlModeStatusText(PlayerControlMode controlMode)
+        {
+            return controlMode == PlayerControlMode.Combat
+                ? "Mode: Combat"
+                : "Mode: Investigation";
         }
 
         private static string BuildRadioStatusText(RadioState state, ulong talkerId)
