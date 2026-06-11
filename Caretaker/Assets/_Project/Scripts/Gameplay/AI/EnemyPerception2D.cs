@@ -245,6 +245,11 @@ namespace Caretaker.Gameplay
         {
             if (_visionObject == null)
             {
+                if (!Application.isPlaying)
+                {
+                    return;
+                }
+
                 CreateVisionArea();
             }
 
